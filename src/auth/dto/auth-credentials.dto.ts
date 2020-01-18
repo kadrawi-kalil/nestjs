@@ -7,7 +7,7 @@ export class AuthCredentialsDto {
     username: string;
     
     @IsString()
-    @MinLength(8)
+    @MinLength(4)//8
     @MaxLength(20)
   /*  @Matches(
         /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,

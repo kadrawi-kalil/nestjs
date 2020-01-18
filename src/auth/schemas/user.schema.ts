@@ -1,9 +1,23 @@
 import * as mongoose from 'mongoose';
 
 export const UserSchema = new mongoose.Schema({
-    id: String,
-    username: String,
-    password: String,
-    salt:String,
+    
+    id: {
+        type: String,
+      },
+
+    username: {
+        type: String,
+        required: true
+      },
+
+    password: {
+        type: String,
+        required: true
+      },
+
+    salt: {
+        type: String,
+      },
 });
 

@@ -3,10 +3,28 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserSchema } from './schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: "top5secret" ,//process.env.JWT_SECRET || jwtConfig.secret,
+      signOptions: {
+        expiresIn: 3600,//jwtConfig.expiresIn,
+      },
+    })
+    ,MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [
+    AuthService,
+     JwtStrategy,
+  ],
+  exports: [
+    JwtStrategy,
+    PassportModule,
+  ],
 })
 export class AuthModule {}

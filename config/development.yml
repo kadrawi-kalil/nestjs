@@ -1,0 +1,8 @@
+db:
+  host: 'localhost'
+  username: 'kalil123'
+  password: 'kalil123'
+
+
+jwt:
+  secret: 'top5secret'
