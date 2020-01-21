@@ -4,6 +4,9 @@
   "description": "",
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": "8.17.0"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
