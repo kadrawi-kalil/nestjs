@@ -6,6 +6,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
+import * as gravatar from 'gravatar';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
   }
 
   async signUp(authCredentialsDto:  AuthCredentialsDto): Promise<void> {
-    let { username, password } = authCredentialsDto;
+    let { username,email, password } = authCredentialsDto;
 
     const exists= await this.userModel.findOne({username:username});
     if(exists){
@@ -22,9 +23,18 @@ export class AuthService {
     }
     const salt = await bcrypt.genSalt();
     password = await this.hashPassword(password,salt);
-    const user = new  this.userModel({username,password,salt}) ;
+
+    const avatar = gravatar.url(email, {
+        s: '200', // Size
+        r: 'pg', // Rating
+        d: 'mm' // Default
+      });
+
+
+    const user = new  this.userModel({username,email,password,salt,avatar});
     
    await user.save();
+   console.log(avatar)
 }
 
  async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {

@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, Val
 import { TasksService} from './tasks.service';
 import { Task, TaskStatus } from './tasks.model';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
@@ -14,14 +13,7 @@ import { User } from 'src/auth/user.model';
 export class TasksController {
     constructor(private tasksService: TasksService){}
     
-    @Get('filter')
-    getFilter( @Query() filterDto: GetTasksFilterDto):  Task [] {
-      if(Object.keys(filterDto).length){
-        return this.tasksService.getFilter(filterDto);
-      }else{
-       // return this.tasksService.getAllTasks();
-      }     
-    }
+   
 
     @Get('/:id')
     getTaskById(@Param('id') id:string,

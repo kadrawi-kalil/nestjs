@@ -1,14 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task, TaskStatus } from './tasks.model';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/user.model';
 
 @Injectable()
 export class TasksService {
-    private tasks : Task[] = [];
     constructor( @InjectModel('Task') private  taskModel: Model<Task>) {}
     
     async createTask(createTaskDto: CreateTaskDto,user: User ): Promise<Task> { 
@@ -23,11 +21,6 @@ export class TasksService {
         return await this.taskModel.find({ userId:user._id});
       }
     
-    getFilter(
-        filterDto: GetTasksFilterDto,
-    ): Task[] {
-        return this.tasks;
-    }
 
     async  getTaskById(id:string,user: User ): Promise<Task>{
        const found= await this.taskModel.find({_id:id, userId:user._id});
@@ -59,6 +52,5 @@ export class TasksService {
         }
         throw new NotFoundException(`no ${id} exit`);
      
-       
     }
 }

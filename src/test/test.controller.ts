@@ -1,7 +1,7 @@
 import { Controller, Get ,Response} from '@nestjs/common';
 
 
-@Controller('')
+@Controller('test')
 export class TestController {
     @Get()
     test( ):  any{
