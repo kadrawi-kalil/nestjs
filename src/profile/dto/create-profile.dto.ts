@@ -26,11 +26,45 @@ export class CreateProfileDto {
   githubusername: string;
   experience: [CreateExperienceDto];
   education: [CreateEducationDto];
-  social : CreateSocialDto;
+  youtube: string;
+  twitter: string;
+  facebook: string;
+  linkedin: string;
+  instagram: string;
   profileFields: CreateExperienceDto[];
   
 }
 
+export class ProfileDto {
+
+  user: string;
+
+  @IsNotEmpty()
+  handle: string;
+
+  @IsNotEmpty()
+  company: string;
+
+ 
+  website: string;
+
+ 
+  location:string;
+
+  
+  status: string;
+
+
+  skills: [string];
+
+  bio: string;
+  githubusername: string;
+  experience: [CreateExperienceDto];
+  education: [CreateEducationDto];
+  social : CreateSocialDto;
+  profileFields: CreateExperienceDto[];
+  
+}
 export class  CreateExperienceDto {
   title: string;
   company: string;

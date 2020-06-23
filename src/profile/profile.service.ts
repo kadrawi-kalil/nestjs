@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Profile, Social,Education,Experience } from './profile.model';
-import { CreateProfileDto,CreateExperienceDto,CreateEducationDto,CreateSocialDto} from './dto/create-profile.dto';
+import { CreateProfileDto,CreateExperienceDto,CreateEducationDto,CreateSocialDto,ProfileDto} from './dto/create-profile.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/user.model';
@@ -12,7 +12,7 @@ export class ProfileService {
     // @desc    Get current users profile
     // @access  Private
     async getProfile(user: User ): Promise<Profile> {
-        return await this.profileModel.find({ user:user._id});
+        return  await this.profileModel.findOne({ user:user._id}).populate('user');
       }
 
     // @route   GET api/profile/all
@@ -26,7 +26,7 @@ export class ProfileService {
     // @desc    Get profile by handle
     // @access  Public
     async  getProfileByUserId(id:string  ): Promise<Profile>{
-        const found= await this.profileModel.find({user:id}).populate('users', ['name', 'avatar']);
+        const found= await this.profileModel.find({user:id}).populate('user', ['name', 'avatar']);
          if(!found){
              throw new NotFoundException(`no ${id} exit`);
          }
@@ -36,10 +36,10 @@ export class ProfileService {
     // @route   GET api/profile/user/:user_id
     // @desc    Get profile by user ID
     // @access  Public
-     async  getProfileById(id:string ): Promise<Profile>{
-        const found= await this.profileModel.find({_id:id}).populate('users', ['name', 'avatar']);
+     async  getProfileByHandle(handle:string ): Promise<Profile>{
+        const found= await this.profileModel.findOne({handle:handle}).populate('user');
          if(!found){
-             throw new NotFoundException(`no ${id} exit`);
+             throw new NotFoundException(`no ${handle} exit`);
          }
          return found;
      }
@@ -49,8 +49,8 @@ export class ProfileService {
     // @desc    Create or edit user profile
     // @access  Private
     async createProfile(createProfileDto: CreateProfileDto,userAuth: User ): Promise<Profile> { 
-        const { handle,company,website,location,status,skills,bio,githubusername,social}=createProfileDto;
-        const createdProfile = new this.profileModel({ user:userAuth._id,handle,company,website,location,status,skills,bio,githubusername,social});
+        const { handle,company,website,location,status,skills,bio,githubusername}=createProfileDto;
+        const createdProfile = new this.profileModel({ user:userAuth._id,handle,company,website,location,status,skills,bio,githubusername});
         return await createdProfile.save();
       }
 
@@ -59,7 +59,8 @@ export class ProfileService {
     // @desc    Create or edit user profile
     // @access  Private
     async updateProfile(createProfileDto: CreateProfileDto, userAuth: User): Promise<Profile> {
-        const  profileFields  =new   CreateProfileDto();
+        const  profileFields  =new   ProfileDto();
+        
         profileFields.user = userAuth._id;
         if (createProfileDto.handle) profileFields.handle = createProfileDto.handle;
         if (createProfileDto.company) profileFields.company = createProfileDto.company;
@@ -70,11 +71,12 @@ export class ProfileService {
         if (createProfileDto.githubusername) profileFields.githubusername = createProfileDto.githubusername;
         if (typeof createProfileDto.skills !== 'undefined') {  profileFields.skills = createProfileDto.skills;}
         const  socialFields  =new   CreateSocialDto();
-        if (createProfileDto.social.youtube) socialFields.youtube = createProfileDto.social.youtube;
-        if (createProfileDto.social.twitter) socialFields.twitter = createProfileDto.social.twitter;
-        if (createProfileDto.social.facebook) socialFields.facebook = createProfileDto.social.facebook;
-        if (createProfileDto.social.linkedin) socialFields.linkedin = createProfileDto.social.linkedin;
-        if (createProfileDto.social.instagram) socialFields.instagram = createProfileDto.social.instagram;
+        console.log(createProfileDto)
+        if (createProfileDto.youtube) socialFields.youtube = createProfileDto.youtube;
+        if (createProfileDto.twitter) socialFields.twitter = createProfileDto.twitter;
+        if (createProfileDto.facebook) socialFields.facebook = createProfileDto.facebook;
+        if (createProfileDto.linkedin) socialFields.linkedin = createProfileDto.linkedin;
+        if (createProfileDto.instagram) socialFields.instagram = createProfileDto.instagram;
         profileFields.social = socialFields;
         const found= await this.profileModel.find({user:userAuth._id});
         console.log(found.length)

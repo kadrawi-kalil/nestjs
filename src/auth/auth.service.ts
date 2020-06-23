@@ -14,12 +14,15 @@ export class AuthService {
   
   }
 
-  async signUp(authCredentialsDto:  AuthCredentialsDto): Promise<void> {
-    let { username,email, password } = authCredentialsDto;
+  async signUp(authCredentialsDto:  AuthCredentialsDto): Promise<User> {
+    let { name,email, password ,password2 } = authCredentialsDto;
 
-    const exists= await this.userModel.findOne({username:username});
+    const exists= await this.userModel.findOne({name:name});
     if(exists){
         throw new ConflictException('Username already exists');
+    }
+    if(password.toString()!==password2.toString()){
+        throw new  UnauthorizedException('Password not matched');
     }
     const salt = await bcrypt.genSalt();
     password = await this.hashPassword(password,salt);
@@ -31,26 +34,30 @@ export class AuthService {
       });
 
 
-    const user = new  this.userModel({username,email,password,salt,avatar});
+    const user = new  this.userModel({name:name,email,password,salt,avatar});
     
-   await user.save();
-   console.log(avatar)
+  return await user.save();
+   
 }
 
- async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
-    const { username, password } = authCredentialsDto;
-    const user =await  this.userModel.findOne({username:username});
+ async signIn(authCredentialsDto: AuthCredentialsDto): Promise<Object> {
+    const {email,name, password } = authCredentialsDto;
+    console.log('name', email )
+    const user =await  this.userModel.findOne({email:email});
     if (user) {
         const chek=await this.validatePassword(user.password,password, user.salt);
          if(chek){
-            const payload : JwtPayload= { username };
+            const payload : JwtPayload= { id:user._id,  email:user.email,name:user.name, avatar:user.avatar };
             const accessToken =this.jwtService.sign(payload);
-           // this.logger.debug(`Generated JWT Token with payload ${JSON.stringify(payload)}`);
+            console.log(`Generated JWT Token with payload ${JSON.stringify(payload)}`);
     
-            return { accessToken };
-        }}
-        throw new  UnauthorizedException('Invalid credentials');
+            return { "token": 'Bearer '+accessToken };
+        }
+        throw new ConflictException('Password not matched');
+      }
+        throw new  UnauthorizedException('Mail does not exist !');
 }
+
 
  async hashPassword(password: string, salt: string): Promise<string> {
      return bcrypt.hash(password, salt);

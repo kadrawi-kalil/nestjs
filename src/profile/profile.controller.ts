@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
 import { ProfileService} from './profile.service';
-import { Profile, Social,Education,Experience } from './profile.model';
-import { CreateProfileDto,CreateExperienceDto,CreateEducationDto,CreateSocialDto} from './dto/create-profile.dto';
+import { Profile } from './profile.model';
+import { CreateProfileDto,CreateExperienceDto,CreateEducationDto} from './dto/create-profile.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.model';
@@ -46,10 +46,10 @@ export class ProfileController {
     // @route   GET api/profile/user/:user_id
     // @desc    Get profile by user ID
     // @access  Public
-    @Get('handel/:id')
+    @Get('handle/:handle')
     @UseGuards(AuthGuard())
-    getProfileById(@Param('id') id:string):  Promise<Profile>{
-        return this.profilesService.getProfileById(id);
+    getProfileByHandle(@Param('handle') handle:string):  Promise<Profile>{
+        return this.profilesService.getProfileByHandle(handle);
     }
 
     // @route   POST api/profile
